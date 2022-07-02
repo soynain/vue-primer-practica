@@ -1,18 +1,13 @@
 <script setup>
-
+import ExampleCompVue from './components/ExampleComp.vue';
+import { ref,provide } from 'vue/dist/vue.esm-browser';
+const contar = ref(0);
+function increment() {
+    contar.value++
+}
+provide('key','arrecho');
 </script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-    
-    </div>
-  </header>
-
-  <main>
-     <button @click="count++">{{count}}</button>
-  </main>
+  <ExampleCompVue/>
 </template>
 
