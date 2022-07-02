@@ -1,13 +1,14 @@
 <script setup>
 import ExampleCompVue from './components/ExampleComp.vue';
-import { ref,provide } from 'vue/dist/vue.esm-browser';
+import { ref, provide } from 'vue';
 const contar = ref(0);
 function increment() {
-    contar.value++
+  contar.value++
 }
-provide('key','arrecho');
+provide('key', { contar, increment });
 </script>
 <template>
-  <ExampleCompVue/>
+<div class="navo">dasdads {{contar}}</div>
+  <ExampleCompVue></ExampleCompVue>
 </template>
 

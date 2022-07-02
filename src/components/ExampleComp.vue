@@ -1,14 +1,11 @@
 <script setup>
 import store from 'store-js';
-import { inject } from 'vue/dist/vue.esm-browser'
+import { inject } from 'vue'
 
 
-const roma=inject('key');
+const {contar,increment}=inject('key');
 
-function prueba(){
-    console.log(roma)
-}
 </script>
 <template>
-    <button class="btn btn-primary" @click="prueba">Kaisoc</button>
+    <button class="btn btn-primary" @click="increment">{{contar}}</button>
 </template>

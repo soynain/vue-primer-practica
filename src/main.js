@@ -1,6 +1,6 @@
-import { createApp } from 'vue/dist/vue.esm-browser'
+import { createApp } from 'vue'
 import App from './App.vue'
-import ExampleCompVue from './components/ExampleComp.vue';
+
 
 
 
