@@ -1,10 +1,14 @@
 <script setup>
-const response=await fetch('https://data.sfgov.org/resource/yitu-d5am.json?'+
-new URLSearchParams({
-    '$limit':100
-}),{method:'GET'});
-const jsonResponse=await response.json();
-console.log(jsonResponse);
+import { ref } from 'vue';
+console.time('benchmark fetch');
+const response = await fetch('https://data.sfgov.org/resource/yitu-d5am.json?' +
+    new URLSearchParams({
+        '$limit': 100
+    }), { method: 'GET' });
+const jsonResponse = await response.json();
+const varro=1
+defineExpose({jsonResponse});
+console.timeEnd('benchmark fetch');
 </script>
 <template>
     <thead>
@@ -16,9 +20,9 @@ console.log(jsonResponse);
     </thead>
     <tbody v-for="row in jsonResponse">
         <tr>
-            <th scope="col">{{row.title}}</th>
-            <td>{{row.release_year}}</td>
-            <td>{{row.locations}}</td>
+            <th scope="col">{{ row.title }}</th>
+            <td>{{ row.release_year }}</td>
+            <td>{{ row.locations }}</td>
         </tr>
     </tbody>
 </template>

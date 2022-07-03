@@ -5,7 +5,6 @@ en este caso root que es app.vue solo tiene un hijo
 y ExampleComp también tiene un hijo, entonces podrá
 compartir datos con los nietos y el hijo*/
 import TableParentComponent from './components/TableParentComponent.vue';
-
 </script>
 <template>
 <Suspense>
