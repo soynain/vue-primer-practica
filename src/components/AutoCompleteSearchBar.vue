@@ -1,32 +1,100 @@
 <script setup>
 import { inject, onMounted, ref } from 'vue';
-const movieName = ref(null);
-const jsonList = inject('jsonListProvider');
-console.log(jsonList.value?.value?.jsonResponse);
-function autocompleteSuggestions() {
-    console.log(movieName.value.value);
-    let formCont = document.querySelector('.autocomplete-items');
-    if (formCont === null) {
-        let a = document.createElement('div');
-        a.setAttribute("id", "autocomplete-list");
-        a.setAttribute("class", "autocomplete-items");
-        let b = document.createElement('div');
-        b.innerText = movieName.value.value;
-        a.appendChild(b)
-        let parentNode = document.getElementsByClassName('search-bar-container')[0];
-        parentNode.appendChild(a);
-        let containerCenter=document.querySelector('.center-container');
-        containerCenter.appendChild(parentNode);
-    } else {
+const movieNameInput = ref(null); //text input value from form
+var indexForActiveElementInList = ref(-1);
+const jsonList = inject('jsonListProvider'); //json from sibling's fetch  
+const {resetRowsKey,funcion} = inject('d');
 
-        let b = document.createElement('div');
-        b.innerText = movieName.value.value;
-        //  a.appendChild(b)
-        //let parentNode = document.getElementsByClassName('search-bar-container')[0];
-        formCont.appendChild(b);
+//console.log(jsonList.value?.value?.jsonResponse);
+defineExpose({ movieNameInput });
+
+function addActive(x) {
+    removeActive(x);
+    if (indexForActiveElementInList.value >= x.length) indexForActiveElementInList.value = 0;
+    if (indexForActiveElementInList.value < 0) indexForActiveElementInList.value = (x.length - 1);
+    x[indexForActiveElementInList.value].classList.add("autocomplete-active");
+}
+function removeActive(x) {
+    for (var i = 0; i < x.length; i++) {
+        x[i].classList.remove("autocomplete-active");
     }
+}
+function arrowDown() {
+    var x = document.getElementById("autocomplete-list");
+    if (x !== null) {
+        indexForActiveElementInList.value++;
+        addActive(x.childNodes);
+    }
+}
+
+function arrowUp() {
+    let x = document.getElementById("autocomplete-list");
+    if (x !== null) {
+        indexForActiveElementInList.value--;
+        addActive(x.childNodes);
+    }
+}
+
+function closeAllLists() {
+    var x = document.getElementsByClassName("autocomplete-items");
+    for (var i = 0; i < x.length; i++) {
+        x[i].parentNode.removeChild(x[i]);
+    }
+    indexForActiveElementInList.value = 0;
+    resetRowsKey.value++;
+}
+
+function entercl() {
+    var x = document.getElementsByClassName("autocomplete-items")[0].childNodes;
+    var y = document.getElementsByClassName('tbl-body');
+    movieNameInput.value.value = x[indexForActiveElementInList.value].innerText;
+    // console.log(y[0].remove)
+    funcion(movieNameInput.value.value);
+    closeAllLists();
 
 }
+
+function autocompleteSuggestions() {
+    //  console.log(movieName.value.value);
+    
+    closeAllLists();
+    let AutoCompleteMainContainer = document.querySelector('.autocomplete-items');
+    let formInstanceParent = document.getElementsByClassName('search-bar-container')[0];
+    if (AutoCompleteMainContainer === null) {
+        let containerForAutoCompleteList = document.createElement('div');
+        containerForAutoCompleteList.setAttribute("id", "autocomplete-list");
+        containerForAutoCompleteList.setAttribute("class", "autocomplete-items");
+        for (let i = 0; i < jsonList.value?.value?.jsonResponse.length; i++) {
+            if (jsonList.value?.value?.jsonResponse[i].title.includes(movieNameInput.value.value)) {
+                let autoCompleteItemName = document.createElement('div');
+                autoCompleteItemName.innerText = jsonList.value?.value?.jsonResponse[i].title;
+                autoCompleteItemName.addEventListener('click', (e) => {
+                    movieNameInput.value.value = e.target.innerText;
+                    funcion(e.target.innerText);
+                    closeAllLists();
+                })
+                containerForAutoCompleteList.appendChild(autoCompleteItemName)
+            }
+        }
+        formInstanceParent.appendChild(containerForAutoCompleteList);
+    } else {
+        for (let i = 0; i < jsonList.value?.value?.jsonResponse.length; i++) {
+            if (jsonList.value?.value?.jsonResponse[i].title.includes(movieNameInput.value.value)) {
+                let autoCompleteItemName = document.createElement('div');
+                autoCompleteItemName.innerText = jsonList.value?.value?.jsonResponse[i].title;
+                autoCompleteItemName.addEventListener('click', (e) => {
+                    movieNameInput.value.value = e.target.innerText;
+                    funcion(e.target.innerText);
+                    closeAllLists();
+                })
+                AutoCompleteMainContainer.appendChild(autoCompleteItemName);
+            }
+        }
+    }
+}
+onMounted(() => {
+    
+})
 </script>
 <style>
 .autocomplete-items {
@@ -34,7 +102,7 @@ function autocompleteSuggestions() {
     border: 1px solid #d4d4d4;
     border-bottom: none;
     border-top: none;
-    width:94%;
+    width: 94%;
     z-index: 99;
     /*position the autocomplete items to be the same width as the container:*/
     top: 20%;
@@ -61,12 +129,11 @@ function autocompleteSuggestions() {
 </style>
 <template >
     <Suspense>
-        <form class="search-bar-container mt-3 w-100" method="post" action="/get-movie">
+        <form @submit.prevent class="search-bar-container mt-3 w-100" method="post" action="/get-movie">
             <label class="text-center form-label w-100" for="movie-name">Introduce el nombre de la pelicula</label>
-            <input @input="autocompleteSuggestions" type="text" ref="movieName" name="movie-name" class="form-control">
-            <div class="d-flex flex-column justify-content-between align-items-center w-100 center-container">
-                
-            </div>
+            <input @keyup.enter="entercl" @keyup.up="arrowUp" @keyup.down="arrowDown" @keyup.delete="closeAllLists"
+                @input="autocompleteSuggestions" type="text" ref="movieNameInput" name="movie-name"
+                class="form-control">
         </form>
     </Suspense>
 </template>

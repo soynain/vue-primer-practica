@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 console.time('benchmark fetch');
 const response = await fetch('https://data.sfgov.org/resource/yitu-d5am.json?' +
     new URLSearchParams({
@@ -18,8 +18,8 @@ console.timeEnd('benchmark fetch');
             <th scope="col">Locations</th>
         </tr>
     </thead>
-    <tbody v-for="row in jsonResponse">
-        <tr>
+    <tbody class="tbl-body" >
+        <tr v-for="row in jsonResponse">
             <th scope="col">{{ row.title }}</th>
             <td>{{ row.release_year }}</td>
             <td>{{ row.locations }}</td>
